@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sahith Sai Pasupula — Custom DSA, GATE 2027 &amp; Program Task Tracker</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            surface: {
+              950: '#090b0f',
+              900: '#0e1117',
+              850: '#131720',
+              800: '#181d28',
+              700: '#232938',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .hero-grid {
+      background-image:
+        linear-gradient(to right, rgba(59, 130, 246, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    html:not(.dark) .hero-grid {
+      background-image:
+        linear-gradient(to right, rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-surface-950 dark:text-slate-100 min-h-screen antialiased selection:bg-blue-500/30">
+
+  <div id="app" class="flex min-h-screen">
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm hidden lg:hidden"></div>
+
+    <!-- Left Sidebar -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-64 shrink-0 bg-white dark:bg-surface-900 border-r border-slate-200 dark:border-surface-700/80 flex flex-col transition-transform duration-200 -translate-x-full lg:translate-x-0">
+      <!-- Brand -->
+      <div class="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-surface-700/80">
+        <a href="https://sahith8639.github.io/Portfolio/" target="_blank" rel="noopener noreferrer" title="Visit Sahith Sai Pasupula Portfolio" class="flex flex-col items-center justify-center leading-none select-none mx-auto lg:mx-0 hover:opacity-85 transition-opacity">
+          <span class="text-[15px] font-extrabold uppercase tracking-tight text-[#3898ec] leading-[0.95]">SAHITH SAI</span>
+          <span class="text-[18px] font-extrabold uppercase tracking-tight text-slate-900 dark:text-white leading-[0.95]">PASUPULA</span>
+        </a>
+        <button id="close-sidebar-btn" type="button" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-surface-800" aria-label="Close sidebar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Programs Section -->
+      <div class="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+        <div>
+          <div class="px-2 mb-2 flex items-center justify-between">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">My Programs</span>
+            <button id="add-program-btn" type="button" class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              New
+            </button>
+          </div>
+          <nav id="program-list" class="space-y-1"></nav>
+          <button id="sidebar-remove-program-btn" type="button" class="mt-2 w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-500 hover:bg-rose-500/10 border border-dashed border-rose-500/30 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <span>Remove Program</span>
+          </button>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="pt-3 border-t border-slate-200 dark:border-surface-700/70">
+          <span class="px-2 mb-2 block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Workspace</span>
+          <div class="space-y-1">
+            <button id="open-timer-btn" type="button" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800 transition-colors">
+              <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+              <span>Focus Timer</span>
+            </button>
+            <button id="export-data-btn" type="button" class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800 transition-colors">
+              <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+              <span>Export Backup</span>
+            </button>
+            <label class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+              <svg class="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M17 8l-5-5-5 5M12 3v12"/></svg>
+              <span>Import Backup</span>
+              <input id="import-data-input" type="file" accept=".json" class="hidden" />
+            </label>
+            <button id="db-status-btn" type="button" class="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800 transition-colors">
+              <span class="flex items-center gap-2.5 min-w-0">
+                <svg class="w-4 h-4 text-cyan-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                <span class="truncate">Database</span>
+              </span>
+              <span class="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span id="db-badge-label">IDB</span>
+              </span>
+            </button>
+            <button id="open-portfolio-drawer-btn" type="button" class="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800 transition-colors">
+              <span class="flex items-center gap-2.5 min-w-0">
+                <svg class="w-4 h-4 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                <span class="truncate">Portfolio Side View</span>
+              </span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-500">EXT</span>
+            </button>
+            <a href="https://sahith8639.github.io/Portfolio/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800 transition-colors">
+              <span class="flex items-center gap-2.5 min-w-0">
+                <svg class="w-4 h-4 text-indigo-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                <span class="truncate">Open Portfolio</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-3 border-t border-slate-200 dark:border-surface-700/80">
+        <div class="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white flex items-center justify-between shadow-md shadow-blue-600/20">
+          <div class="min-w-0">
+            <p class="text-xs font-semibold truncate" id="sidebar-active-program-label">DSA Sheet</p>
+            <p class="text-[11px] text-blue-100" id="sidebar-active-progress-label">0% completed</p>
+          </div>
+          <span class="text-xs font-mono font-bold bg-white/20 px-2 py-0.5 rounded-md" id="sidebar-active-badge">0/0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Area -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Top Navbar -->
+      <header class="sticky top-0 z-20 h-16 bg-white/90 dark:bg-surface-900/90 backdrop-blur-md border-b border-slate-200 dark:border-surface-700/80 px-4 lg:px-6 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <button id="open-sidebar-btn" type="button" class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-800" aria-label="Open sidebar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+
+          <!-- Search Input -->
+          <div class="relative flex-1 max-w-md">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+            <input id="search-input" type="text" placeholder="Search tasks, topics, tags..." class="w-full pl-10 pr-8 py-2 text-sm rounded-full bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all" />
+            <button id="clear-search-btn" type="button" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200" aria-label="Clear search">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 shrink-0">
+          <!-- Theme Toggle -->
+          <button id="theme-toggle-btn" type="button" class="p-2 rounded-full border border-slate-200 dark:border-surface-700 bg-slate-100 dark:bg-surface-800 text-slate-600 dark:text-slate-300 hover:border-blue-500/50 transition-colors" title="Toggle theme" aria-label="Toggle theme">
+            <svg id="theme-icon-moon" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            <svg id="theme-icon-sun" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path stroke-linecap="round" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+
+          <!-- Streak Badge -->
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-semibold">
+            <span>🔥</span>
+            <span id="header-streak-text">0 day streak</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Workspace -->
+      <main class="flex-1 p-4 lg:p-6 max-w-[1440px] w-full mx-auto">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+
+          <!-- Left / Primary Column (8 cols) -->
+          <div class="xl:col-span-8 space-y-5">
+
+            <!-- Hero Card -->
+            <section class="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-surface-700/80 bg-white dark:bg-surface-900 hero-grid p-6">
+              <div class="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div class="space-y-2 max-w-2xl">
+                  <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                    <span id="hero-badge-text">Active Program</span>
+                  </div>
+                  <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                    <span id="hero-highlight" class="text-blue-600 dark:text-blue-400"></span>
+                    <span id="hero-title" class="text-slate-900 dark:text-white"></span>
+                  </h1>
+                  <p id="hero-subtitle" class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed"></p>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <button id="edit-program-btn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-surface-700 bg-slate-100 dark:bg-surface-800 hover:bg-slate-200 dark:hover:bg-surface-700 transition-colors">
+                    Edit Program
+                  </button>
+                  <button id="delete-program-btn" type="button" class="p-1.5 rounded-lg text-xs border border-slate-200 dark:border-surface-700 text-rose-500 hover:bg-rose-500/10 transition-colors" title="Delete Program">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filter & Action Toolbar -->
+              <div class="relative z-10 mt-5 pt-4 border-t border-slate-200/80 dark:border-surface-700/70 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-1.5" id="filter-pills">
+                  <button type="button" data-filter="all" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">All Tasks</button>
+                  <button type="button" data-filter="pending" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">Pending</button>
+                  <button type="button" data-filter="done" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">Completed</button>
+                  <button type="button" data-filter="saved" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                    Saved (<span id="saved-count">0</span>)
+                  </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button id="add-topic-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-800 hover:bg-slate-100 dark:hover:bg-surface-700 transition-colors">
+                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+                    Add Topic
+                  </button>
+                  <button id="add-task-btn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/30 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+                    Add Task
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Roadmap / Quick Callout Banner -->
+            <section class="rounded-2xl border border-slate-200 dark:border-surface-700/80 bg-white dark:bg-surface-900 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Your Study Roadmap</span>
+                <h2 class="text-base sm:text-lg font-bold mt-0.5" id="roadmap-banner-title">Build Your Personalized Roadmap</h2>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Add custom tasks, attach your own YouTube lecture links, and track daily streaks.</p>
+              </div>
+              <button id="roadmap-quick-add-btn" type="button" class="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-md shadow-blue-600/20 transition-all">
+                <span>+ New Task &amp; YT Link</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+              </button>
+            </section>
+
+            <!-- Topics / Accordions Container -->
+            <section id="topics-container" class="space-y-4"></section>
+
+          </div>
+
+          <!-- Right / Stats & Calendar Column (4 cols) -->
+          <div class="xl:col-span-4 space-y-5 xl:sticky xl:top-22">
+
+            <!-- Progress Card -->
+            <section class="rounded-2xl border border-slate-200 dark:border-surface-700/80 bg-white dark:bg-surface-900 p-5 space-y-5">
+              <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold" id="progress-encouragement">Let's get started!</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Complete tasks in this program to build momentum.</p>
+                </div>
+              </div>
+
+              <!-- Circular Ring + Totals -->
+              <div class="flex items-center gap-5">
+                <div class="relative w-24 h-24 shrink-0">
+                  <svg class="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" class="text-slate-200 dark:text-surface-700" />
+                    <circle id="progress-ring-circle" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="263.89" class="text-blue-500 transition-all duration-500" />
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span id="progress-percent-text" class="text-lg font-extrabold tabular-nums">0%</span>
+                    <span id="progress-fraction-text" class="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">0/0</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-base font-bold">Total progress</p>
+                  <p id="progress-remaining-text" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">0 tasks to go</p>
+                </div>
+              </div>
+
+              <!-- Easy / Medium / Hard Breakdown -->
+              <div class="space-y-3 pt-2 border-t border-slate-200 dark:border-surface-700/70">
+                <!-- Easy -->
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="font-semibold text-emerald-500">Easy</span>
+                    <span id="easy-stat-text" class="text-slate-500 dark:text-slate-400 tabular-nums">0/0 0%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-200 dark:bg-surface-800 overflow-hidden">
+                    <div id="easy-stat-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                  </div>
+                </div>
+                <!-- Medium -->
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="font-semibold text-amber-500">Medium</span>
+                    <span id="medium-stat-text" class="text-slate-500 dark:text-slate-400 tabular-nums">0/0 0%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-200 dark:bg-surface-800 overflow-hidden">
+                    <div id="medium-stat-bar" class="h-full bg-amber-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                  </div>
+                </div>
+                <!-- Hard -->
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="font-semibold text-rose-500">Hard</span>
+                    <span id="hard-stat-text" class="text-slate-500 dark:text-slate-400 tabular-nums">0/0 0%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-200 dark:bg-surface-800 overflow-hidden">
+                    <div id="hard-stat-bar" class="h-full bg-rose-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Streak & Calendar Card -->
+            <section class="rounded-2xl border border-slate-200 dark:border-surface-700/80 bg-white dark:bg-surface-900 p-5 space-y-4">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+                    🔥
+                  </div>
+                  <div>
+                    <div class="flex items-baseline gap-1">
+                      <span id="calendar-streak-count" class="text-lg font-extrabold tabular-nums">0</span>
+                      <span class="text-xs font-medium text-slate-500 dark:text-slate-400">day streak</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1 bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 rounded-lg px-2 py-1">
+                  <button id="cal-prev-btn" type="button" class="p-0.5 text-slate-400 hover:text-slate-200" aria-label="Previous month">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                  </button>
+                  <span id="cal-month-label" class="text-xs font-semibold px-1.5 min-w-[100px] text-center">Month Year</span>
+                  <button id="cal-next-btn" type="button" class="p-0.5 text-slate-400 hover:text-slate-200" aria-label="Next month">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-slate-400">
+                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+              </div>
+              <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-xs"></div>
+
+              <div class="pt-2 border-t border-slate-200 dark:border-surface-700/70 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <span>Total Active Days: <strong id="total-active-days" class="text-slate-900 dark:text-slate-100">0</strong></span>
+                <button id="mark-today-active-btn" type="button" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Log Today</button>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Floating Timer Widget (matches screenshot top-left widget) -->
+  <div id="timer-widget" class="fixed top-20 left-4 sm:left-8 z-50 w-72 rounded-2xl border border-slate-200 dark:border-surface-700 bg-white/95 dark:bg-surface-900/95 backdrop-blur-md shadow-2xl p-4 hidden">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Task Timer</span>
+      <button id="timer-close-btn" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-surface-800" aria-label="Close timer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div id="timer-display" class="text-4xl font-mono font-bold text-center tracking-tight tabular-nums my-2">30:00</div>
+
+    <div class="grid grid-cols-2 gap-2.5 my-3">
+      <button id="timer-start-btn" type="button" class="inline-flex items-center justify-center gap-1.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors">
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <span id="timer-start-label">Start</span>
+      </button>
+      <button id="timer-reset-btn" type="button" class="inline-flex items-center justify-center gap-1.5 py-2 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-500 text-xs font-semibold transition-colors">
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+        <span>Reset</span>
+      </button>
+    </div>
+
+    <div class="space-y-1.5 text-xs border-t border-slate-200 dark:border-surface-700/80 pt-3">
+      <div class="flex justify-between gap-2">
+        <span class="text-slate-500 dark:text-slate-400">Topic:</span>
+        <span id="timer-topic" class="font-medium text-blue-500 truncate text-right">—</span>
+      </div>
+      <div class="flex justify-between gap-2">
+        <span class="text-slate-500 dark:text-slate-400">Task:</span>
+        <span id="timer-task-name" class="font-medium text-blue-400 truncate text-right">Select a task</span>
+      </div>
+      <div class="flex justify-between gap-2">
+        <span class="text-slate-500 dark:text-slate-400">Time Limit:</span>
+        <span id="timer-limit-label" class="font-medium text-indigo-400">30 min</span>
+      </div>
+      <div class="flex justify-between gap-2">
+        <span class="text-slate-500 dark:text-slate-400">Level:</span>
+        <span id="timer-level-label" class="font-semibold text-emerald-500">Easy</span>
+      </div>
+    </div>
+
+    <div class="mt-3 pt-2 border-t border-slate-200 dark:border-surface-700/80">
+      <div class="flex items-center justify-between text-[11px] mb-1">
+        <span class="text-slate-500 dark:text-slate-400">Time Remaining</span>
+        <span id="timer-remaining-pct" class="font-mono text-emerald-500">100% (30:00)</span>
+      </div>
+      <div class="h-1.5 rounded-full bg-slate-200 dark:bg-surface-800 overflow-hidden">
+        <div id="timer-progress-bar" class="h-full rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 transition-all duration-300" style="width: 100%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Backdrop & Container -->
+  <div id="modal-overlay" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="modal-box" class="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-900 shadow-2xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-surface-700/80 flex items-center justify-between">
+        <h3 id="modal-title" class="text-base font-bold">Modal</h3>
+        <button id="modal-close-btn" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-surface-800" aria-label="Close modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="modal-body" class="p-5 max-h-[75vh] overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- Portfolio Side Extension Drawer -->
+  <div id="portfolio-drawer-backdrop" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden"></div>
+  <aside id="portfolio-drawer" class="fixed top-0 right-0 z-50 h-screen w-full max-w-xl bg-white dark:bg-surface-900 border-l border-slate-200 dark:border-surface-700 shadow-2xl flex flex-col translate-x-full transition-transform duration-200">
+    <div class="h-14 px-4 border-b border-slate-200 dark:border-surface-700/80 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
+        <span class="text-sm font-bold truncate">Sahith Sai Pasupula — Portfolio</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="https://sahith8639.github.io/Portfolio/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors">
+          <span>Open Full Tab</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+        <button id="close-portfolio-drawer-btn" type="button" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-surface-800" aria-label="Close portfolio drawer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="flex-1 bg-slate-100 dark:bg-surface-950 relative">
+      <iframe id="portfolio-iframe" title="Sahith Sai Pasupula Portfolio" class="w-full h-full border-0" loading="lazy"></iframe>
+    </div>
+  </aside>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-surface-800 text-white border border-slate-700 shadow-xl text-xs font-medium opacity-0 pointer-events-none transition-all duration-200 translate-y-2"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'studyforge_tracker_v1';
+
+      function uid(prefix) {
+        return prefix + '_' + Math.random().toString(36).slice(2, 9);
+      }
+
+      function todayISO() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      const DEFAULT_DATA = {
+        theme: 'dark',
+        activeProgramId: 'prog_dsa',
+        activeDays: [],
+        programs: [
+          {
+            id: 'prog_dsa',
+            name: 'DSA',
+            highlight: 'DSA Sheet -',
+            title: 'Important Patterns & Problems',
+            subtitle: 'Master Data Structures & Algorithms with your own curated YouTube lectures, practice links, and timed sessions.',
+            color: 'blue',
+            topics: [
+              {
+                id: 'top_1ddp',
+                name: '1D Dynamic Programming',
+                expanded: true,
+                tasks: [
+                  {
+                    id: 'tsk_fib',
+                    title: 'Fibonacci & Climbing Stairs',
+                    youtubeUrl: 'https://www.youtube.com/watch?v=tyB0ztf0DNY',
+                    practiceUrl: 'https://leetcode.com/problems/climbing-stairs/',
+                    level: 'Easy',
+                    minutes: 30,
+                    tags: ['Google', 'Amazon', 'Microsoft'],
+                    notes: 'Start with memoization, then convert to tabulation and O(1) space.',
+                    done: false,
+                    saved: false
+                  },
+                  {
+                    id: 'tsk_frog',
+                    title: 'Frog Jump with K Distances',
+                    youtubeUrl: 'https://www.youtube.com/watch?v=EgG3jsGoPvQ',
+                    practiceUrl: '',
+                    level: 'Easy',
+                    minutes: 30,
+                    tags: ['Paytm', 'Flipkart'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  },
+                  {
+                    id: 'tsk_robber',
+                    title: 'House Robber (Max Sum Non-Adjacent)',
+                    youtubeUrl: '',
+                    practiceUrl: 'https://leetcode.com/problems/house-robber/',
+                    level: 'Medium',
+                    minutes: 35,
+                    tags: ['Amazon', 'Adobe', 'Cisco'],
+                    notes: 'Track prev and prev2 variables for O(1) space.',
+                    done: false,
+                    saved: true
+                  }
+                ]
+              },
+              {
+                id: 'top_graphs',
+                name: 'Graphs (BFS / DFS / Shortest Path)',
+                expanded: false,
+                tasks: [
+                  {
+                    id: 'tsk_islands',
+                    title: 'Number of Islands',
+                    youtubeUrl: '',
+                    practiceUrl: 'https://leetcode.com/problems/number-of-islands/',
+                    level: 'Medium',
+                    minutes: 30,
+                    tags: ['Google', 'Meta', 'Uber'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  },
+                  {
+                    id: 'tsk_dijkstra',
+                    title: 'Dijkstra Algorithm (Priority Queue)',
+                    youtubeUrl: '',
+                    practiceUrl: '',
+                    level: 'Hard',
+                    minutes: 45,
+                    tags: ['Microsoft', 'Atlassian'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'prog_gate2027',
+            name: 'GATE 2027',
+            highlight: 'GATE 2027 -',
+            title: 'CS & IT Complete Prep',
+            subtitle: 'Organize core GATE subjects, PYQs, standard textbook concepts, and attach your favorite YouTube playlist lectures.',
+            color: 'indigo',
+            topics: [
+              {
+                id: 'top_gate_algo',
+                name: 'Algorithms & Complexity',
+                expanded: true,
+                tasks: [
+                  {
+                    id: 'tsk_master',
+                    title: 'Asymptotic Notation & Master Theorem',
+                    youtubeUrl: '',
+                    practiceUrl: '',
+                    level: 'Easy',
+                    minutes: 45,
+                    tags: ['GATE PYQ', '2 Marks'],
+                    notes: 'Practice all 3 cases of Master Theorem + extended cases.',
+                    done: false,
+                    saved: false
+                  },
+                  {
+                    id: 'tsk_greedy',
+                    title: 'Greedy: Huffman Coding & MST (Kruskal / Prim)',
+                    youtubeUrl: '',
+                    practiceUrl: '',
+                    level: 'Medium',
+                    minutes: 50,
+                    tags: ['GATE PYQ', 'Core'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  }
+                ]
+              },
+              {
+                id: 'top_gate_os',
+                name: 'Operating Systems',
+                expanded: true,
+                tasks: [
+                  {
+                    id: 'tsk_sched',
+                    title: 'CPU Scheduling & Process Synchronization',
+                    youtubeUrl: '',
+                    practiceUrl: '',
+                    level: 'Medium',
+                    minutes: 45,
+                    tags: ['Semaphores', 'PYQ'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  },
+                  {
+                    id: 'tsk_paging',
+                    title: 'Virtual Memory, Page Replacement & TLB',
+                    youtubeUrl: '',
+                    practiceUrl: '',
+                    level: 'Hard',
+                    minutes: 60,
+                    tags: ['Numerical', 'High Weightage'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  }
+                ]
+              },
+              {
+                id: 'top_gate_dbms',
+                name: 'Databases (DBMS)',
+                expanded: false,
+                tasks: [
+                  {
+                    id: 'tsk_norm',
+                    title: 'Normalization (1NF to BCNF) & Canonical Cover',
+                    youtubeUrl: '',
+                    practiceUrl: '',
+                    level: 'Medium',
+                    minutes: 40,
+                    tags: ['SQL', 'GATE PYQ'],
+                    notes: '',
+                    done: false,
+                    saved: false
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+
+      const DB_NAME = 'StudyForgeDB';
+      const DB_VERSION = 1;
+      let dbInstance = null;
+      let dbEngine = 'localStorage';
+      let lastSavedAt = null;
+
+      function openStudyDB() {
+        return new Promise((resolve) => {
+          if (typeof indexedDB === 'undefined') {
+            resolve(null);
+            return;
+          }
+          try {
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onupgradeneeded = (e) => {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains('programs')) {
+                db.createObjectStore('programs', { keyPath: 'id' });
+              }
+              if (!db.objectStoreNames.contains('topics')) {
+                const ts = db.createObjectStore('topics', { keyPath: 'id' });
+                ts.createIndex('programId', 'programId', { unique: false });
+              }
+              if (!db.objectStoreNames.contains('tasks')) {
+                const ks = db.createObjectStore('tasks', { keyPath: 'id' });
+                ks.createIndex('topicId', 'topicId', { unique: false });
+              }
+              if (!db.objectStoreNames.contains('meta')) {
+                db.createObjectStore('meta', { keyPath: 'key' });
+              }
+            };
+            req.onsuccess = (e) => {
+              dbInstance = e.target.result;
+              dbEngine = 'IndexedDB';
+              resolve(dbInstance);
+            };
+            req.onerror = () => resolve(null);
+          } catch (err) {
+            resolve(null);
+          }
+        });
+      }
+
+      function idbGetAll(storeName) {
+        return new Promise((resolve) => {
+          if (!dbInstance) return resolve([]);
+          try {
+            const tx = dbInstance.transaction(storeName, 'readonly');
+            const req = tx.objectStore(storeName).getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => resolve([]);
+          } catch (e) {
+            resolve([]);
+          }
+        });
+      }
+
+      function writeToIndexedDB(currentState) {
+        if (!dbInstance) return;
+        try {
+          const tx = dbInstance.transaction(['programs', 'topics', 'tasks', 'meta'], 'readwrite');
+          const progStore = tx.objectStore('programs');
+          const topicStore = tx.objectStore('topics');
+          const taskStore = tx.objectStore('tasks');
+          const metaStore = tx.objectStore('meta');
+
+          progStore.clear();
+          topicStore.clear();
+          taskStore.clear();
+
+          currentState.programs.forEach((p, pIdx) => {
+            progStore.put({
+              id: p.id,
+              order: pIdx,
+              name: p.name,
+              highlight: p.highlight,
+              title: p.title,
+              subtitle: p.subtitle,
+              color: p.color || 'blue'
+            });
+            (p.topics || []).forEach((t, tIdx) => {
+              topicStore.put({
+                id: t.id,
+                programId: p.id,
+                order: tIdx,
+                name: t.name,
+                expanded: Boolean(t.expanded)
+              });
+              (t.tasks || []).forEach((k, kIdx) => {
+                taskStore.put({
+                  id: k.id,
+                  topicId: t.id,
+                  programId: p.id,
+                  order: kIdx,
+                  title: k.title,
+                  youtubeUrl: k.youtubeUrl || '',
+                  practiceUrl: k.practiceUrl || '',
+                  level: k.level || 'Medium',
+                  minutes: Number(k.minutes) || 30,
+                  tags: Array.isArray(k.tags) ? k.tags : [],
+                  notes: k.notes || '',
+                  done: Boolean(k.done),
+                  saved: Boolean(k.saved)
+                });
+              });
+            });
+          });
+
+          lastSavedAt = new Date().toISOString();
+          metaStore.put({ key: 'theme', value: currentState.theme });
+          metaStore.put({ key: 'activeProgramId', value: currentState.activeProgramId });
+          metaStore.put({ key: 'activeDays', value: currentState.activeDays || [] });
+          metaStore.put({ key: 'lastSavedAt', value: lastSavedAt });
+        } catch (e) {}
+      }
+
+      async function loadStateFromDB() {
+        await openStudyDB();
+        if (dbInstance) {
+          const [progs, topics, tasks, meta] = await Promise.all([
+            idbGetAll('programs'),
+            idbGetAll('topics'),
+            idbGetAll('tasks'),
+            idbGetAll('meta')
+          ]);
+          if (progs.length > 0) {
+            progs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            topics.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            tasks.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+            const metaMap = {};
+            meta.forEach(m => { metaMap[m.key] = m.value; });
+            lastSavedAt = metaMap.lastSavedAt || null;
+
+            const assembled = progs.map(p => ({
+              id: p.id,
+              name: p.name,
+              highlight: p.highlight,
+              title: p.title,
+              subtitle: p.subtitle,
+              color: p.color,
+              topics: topics
+                .filter(t => t.programId === p.id)
+                .map(t => ({
+                  id: t.id,
+                  name: t.name,
+                  expanded: t.expanded,
+                  tasks: tasks
+                    .filter(k => k.topicId === t.id)
+                    .map(k => ({
+                      id: k.id,
+                      title: k.title,
+                      youtubeUrl: k.youtubeUrl,
+                      practiceUrl: k.practiceUrl,
+                      level: k.level,
+                      minutes: k.minutes,
+                      tags: k.tags,
+                      notes: k.notes,
+                      done: k.done,
+                      saved: k.saved
+                    }))
+                }))
+            }));
+
+            return {
+              theme: metaMap.theme || 'dark',
+              activeProgramId: metaMap.activeProgramId || assembled[0].id,
+              activeDays: Array.isArray(metaMap.activeDays) ? metaMap.activeDays : [],
+              programs: assembled
+            };
+          }
+        }
+
+        // Fallback / migrate from localStorage or seed DEFAULT_DATA
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.programs) && parsed.programs.length > 0) {
+              if (dbInstance) writeToIndexedDB(parsed);
+              return parsed;
+            }
+          }
+        } catch (e) {}
+
+        const initial = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        if (dbInstance) writeToIndexedDB(initial);
+        return initial;
+      }
+
+      function loadStateSyncFallback() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.programs) && parsed.programs.length > 0) {
+              return parsed;
+            }
+          }
+        } catch (e) {}
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+
+      function saveState() {
+        lastSavedAt = new Date().toISOString();
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+        writeToIndexedDB(state);
+      }
+
+      let state = loadStateSyncFallback();
+      let currentFilter = 'all';
+      let searchQuery = '';
+      let calDate = new Date();
+
+      // Timer state
+      let timer = {
+        taskId: null,
+        topicName: '—',
+        taskName: 'Select a task',
+        level: 'Easy',
+        totalSeconds: 30 * 60,
+        remainingSeconds: 30 * 60,
+        running: false,
+        intervalId: null
+      };
+
+      // Helpers
+      function getActiveProgram() {
+        return state.programs.find(p => p.id === state.activeProgramId) || state.programs[0];
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function sanitizeUrl(url) {
+        const trimmed = (url || '').trim();
+        if (!trimmed) return '';
+        if (/^https?:\/\//i.test(trimmed)) return trimmed;
+        return 'https://' + trimmed;
+      }
+
+      function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => {
+          el.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+        }, 2400);
+      }
+
+      function recordTodayActive() {
+        const today = todayISO();
+        if (!state.activeDays.includes(today)) {
+          state.activeDays.push(today);
+        }
+      }
+
+      function computeStreak() {
+        const set = new Set(state.activeDays);
+        if (set.size === 0) return 0;
+        let streak = 0;
+        const d = new Date();
+        // If today is not logged yet, check starting from yesterday
+        const todayStr = todayISO();
+        if (!set.has(todayStr)) {
+          d.setDate(d.getDate() - 1);
+        }
+        while (true) {
+          const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          if (set.has(iso)) {
+            streak++;
+            d.setDate(d.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+        return streak;
+      }
+
+      // Theme
+      function applyTheme() {
+        if (state.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+
+      // Render Sidebar Programs
+      function renderSidebar() {
+        const list = document.getElementById('program-list');
+        const activeProg = getActiveProgram();
+
+        list.innerHTML = state.programs.map(prog => {
+          const allTasks = prog.topics.flatMap(t => t.tasks);
+          const doneCount = allTasks.filter(t => t.done).length;
+          const isActive = prog.id === activeProg.id;
+          return `
+            <div class="group flex items-center gap-1">
+              <button type="button" data-program-id="${escapeHtml(prog.id)}"
+                class="program-nav-btn flex-1 min-w-0 flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-800'
+                }">
+                <span class="truncate">${escapeHtml(prog.name)}</span>
+                <span class="text-[11px] font-mono px-1.5 py-0.5 rounded-md ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-surface-700 text-slate-600 dark:text-slate-300'
+                }">${doneCount}/${allTasks.length}</span>
+              </button>
+              <button type="button" data-remove-program-id="${escapeHtml(prog.id)}"
+                class="program-remove-inline p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                title="Remove ${escapeHtml(prog.name)}" aria-label="Remove ${escapeHtml(prog.name)}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        // Update sidebar footer
+        const activeTasks = activeProg.topics.flatMap(t => t.tasks);
+        const activeDone = activeTasks.filter(t => t.done).length;
+        const pct = activeTasks.length ? Math.round((activeDone / activeTasks.length) * 100) : 0;
+        document.getElementById('sidebar-active-program-label').textContent = activeProg.name;
+        document.getElementById('sidebar-active-progress-label').textContent = `${pct}% completed`;
+        document.getElementById('sidebar-active-badge').textContent = `${activeDone}/${activeTasks.length}`;
+
+        list.querySelectorAll('.program-nav-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.activeProgramId = btn.dataset.programId;
+            saveState();
+            renderAll();
+            closeMobileSidebar();
+          });
+        });
+
+        list.querySelectorAll('.program-remove-inline').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const targetId = btn.dataset.removeProgramId;
+            if (state.programs.length <= 1) {
+              showToast('Keep at least one program in your workspace.');
+              return;
+            }
+            const prog = state.programs.find(p => p.id === targetId);
+            if (!prog) return;
+            openConfirmModal(`Delete program "${prog.name}" and all its topics/tasks?`, () => {
+              state.programs = state.programs.filter(p => p.id !== prog.id);
+              if (state.activeProgramId === prog.id) {
+                state.activeProgramId = state.programs[0].id;
+              }
+              saveState();
+              renderAll();
+              showToast('Program removed');
+            });
+          });
+        });
+      }
+
+      // Render Hero & Filter Pills
+      function renderHero() {
+        const prog = getActiveProgram();
+        const allTasks = prog.topics.flatMap(t => t.tasks);
+        const savedCount = allTasks.filter(t => t.saved).length;
+
+        document.getElementById('hero-badge-text').textContent = `${prog.name} • ${prog.topics.length} Topics`;
+        document.getElementById('hero-highlight').textContent = prog.highlight || '';
+        document.getElementById('hero-title').textContent = prog.title || prog.name;
+        document.getElementById('hero-subtitle').textContent = prog.subtitle || '';
+        document.getElementById('roadmap-banner-title').textContent = `Your Personalized ${prog.name} Roadmap`;
+        document.getElementById('saved-count').textContent = savedCount;
+
+        document.querySelectorAll('.filter-pill').forEach(btn => {
+          const active = btn.dataset.filter === currentFilter;
+          btn.className = `filter-pill px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors ${
+            active
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'bg-slate-100 dark:bg-surface-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-surface-700'
+          }`;
+        });
+      }
+
+      // Render Progress Card
+      function renderStats() {
+        const prog = getActiveProgram();
+        const tasks = prog.topics.flatMap(t => t.tasks);
+        const total = tasks.length;
+        const done = tasks.filter(t => t.done).length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+
+        const circumference = 263.89;
+        const offset = circumference - (pct / 100) * circumference;
+        document.getElementById('progress-ring-circle').style.strokeDashoffset = offset;
+        document.getElementById('progress-percent-text').textContent = `${pct}%`;
+        document.getElementById('progress-fraction-text').textContent = `${done}/${total}`;
+        document.getElementById('progress-remaining-text').textContent = `${total - done} task${total - done === 1 ? '' : 's'} to go`;
+
+        const enc = document.getElementById('progress-encouragement');
+        if (total === 0) enc.textContent = 'Add your first task!';
+        else if (pct === 100) enc.textContent = 'Program completed!';
+        else if (pct >= 50) enc.textContent = 'Great momentum!';
+        else if (done > 0) enc.textContent = 'Nice start, keep going!';
+        else enc.textContent = "Let's get started!";
+
+        ['Easy', 'Medium', 'Hard'].forEach(lvl => {
+          const sub = tasks.filter(t => t.level === lvl);
+          const subDone = sub.filter(t => t.done).length;
+          const subPct = sub.length ? Math.round((subDone / sub.length) * 100) : 0;
+          const key = lvl.toLowerCase();
+          document.getElementById(`${key}-stat-text`).textContent = `${subDone}/${sub.length} ${subPct}%`;
+          document.getElementById(`${key}-stat-bar`).style.width = `${subPct}%`;
+        });
+
+        const streak = computeStreak();
+        document.getElementById('header-streak-text').textContent = `${streak} day streak`;
+        document.getElementById('calendar-streak-count').textContent = streak;
+        document.getElementById('total-active-days').textContent = state.activeDays.length;
+      }
+
+      // Render Calendar
+      function renderCalendar() {
+        const year = calDate.getFullYear();
+        const month = calDate.getMonth();
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        document.getElementById('cal-month-label').textContent = `${monthNames[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const activeSet = new Set(state.activeDays);
+        const todayStr = todayISO();
+
+        let html = '';
+        for (let i = 0; i < firstDay; i++) {
+          html += `<div class="h-8 flex items-center justify-center text-slate-400/40">—</div>`;
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+          const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const isActive = activeSet.has(iso);
+          const isToday = iso === todayStr;
+          let cls = 'h-8 w-8 mx-auto rounded-full flex items-center justify-center text-xs tabular-nums transition-colors ';
+          if (isActive && isToday) {
+            cls += 'bg-blue-600 text-white font-bold ring-2 ring-blue-400';
+          } else if (isActive) {
+            cls += 'bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40';
+          } else if (isToday) {
+            cls += 'border border-blue-500 text-blue-400 font-bold';
+          } else {
+            cls += 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-800';
+          }
+          html += `<div class="${cls}" title="${iso}">${d}</div>`;
+        }
+        document.getElementById('calendar-grid').innerHTML = html;
+      }
+
+      // Level Badge
+      function levelBadgeHtml(level) {
+        if (level === 'Easy') return `<span class="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/25">Easy</span>`;
+        if (level === 'Medium') return `<span class="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-500 border border-amber-500/25">Medium</span>`;
+        return `<span class="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/15 text-rose-500 border border-rose-500/25">Hard</span>`;
+      }
+
+      // Render Topics & Tasks
+      function renderTopics() {
+        const prog = getActiveProgram();
+        const container = document.getElementById('topics-container');
+        const q = searchQuery.trim().toLowerCase();
+
+        if (prog.topics.length === 0) {
+          container.innerHTML = `
+            <div class="rounded-2xl border border-dashed border-slate-300 dark:border-surface-700 p-10 text-center">
+              <p class="text-sm font-semibold">No topics in ${escapeHtml(prog.name)} yet</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Create your first topic to start adding tasks and YouTube links.</p>
+              <button type="button" id="empty-add-topic-btn" class="mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">+ Add Topic</button>
+            </div>`;
+          const emptyBtn = document.getElementById('empty-add-topic-btn');
+          if (emptyBtn) emptyBtn.addEventListener('click', () => openTopicModal());
+          return;
+        }
+
+        const renderedTopics = prog.topics.map(topic => {
+          const filteredTasks = topic.tasks.filter(task => {
+            if (currentFilter === 'pending' && task.done) return false;
+            if (currentFilter === 'done' && !task.done) return false;
+            if (currentFilter === 'saved' && !task.saved) return false;
+            if (q) {
+              const hay = `${task.title} ${topic.name} ${(task.tags || []).join(' ')} ${task.notes || ''}`.toLowerCase();
+              if (!hay.includes(q)) return false;
+            }
+            return true;
+          });
+
+          if ((q || currentFilter !== 'all') && filteredTasks.length === 0) {
+            return '';
+          }
+
+          const totalCount = topic.tasks.length;
+          const doneCount = topic.tasks.filter(t => t.done).length;
+          const isExpanded = q ? true : topic.expanded;
+
+          const rowsHtml = filteredTasks.length === 0
+            ? `<tr><td colspan="8" class="px-4 py-6 text-center text-xs text-slate-500 dark:text-slate-400">No tasks in this topic yet. Click <strong>+ Task</strong> above to add one.</td></tr>`
+            : filteredTasks.map(task => {
+                const ytUrl = sanitizeUrl(task.youtubeUrl);
+                const pracUrl = sanitizeUrl(task.practiceUrl);
+                const tagsHtml = (task.tags || []).slice(0, 2).map(tg =>
+                  `<span class="px-2 py-0.5 rounded-md text-[11px] bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-slate-600 dark:text-slate-300">${escapeHtml(tg)}</span>`
+                ).join('');
+                const extraTags = (task.tags || []).length > 2
+                  ? `<span class="px-1.5 py-0.5 rounded-md text-[11px] bg-slate-100 dark:bg-surface-800 text-slate-400">+${task.tags.length - 2}</span>`
+                  : '';
+
+                return `
+                  <tr class="group border-t border-slate-200/70 dark:border-surface-700/60 hover:bg-slate-50 dark:hover:bg-surface-800/50 transition-colors">
+                    <!-- Checkbox -->
+                    <td class="pl-4 pr-2 py-3.5 w-10">
+                      <button type="button" data-action="toggle-done" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                        class="w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                          task.done
+                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                            : 'border-slate-400 dark:border-slate-600 hover:border-blue-500'
+                        }" title="Mark complete">
+                        ${task.done ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+                      </button>
+                    </td>
+
+                    <!-- Problem / Task Name -->
+                    <td class="px-3 py-3.5 min-w-[200px]">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium ${task.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-slate-100'}">${escapeHtml(task.title)}</span>
+                      </div>
+                    </td>
+
+                    <!-- YouTube Link -->
+                    <td class="px-3 py-3.5 text-center">
+                      <div class="inline-flex items-center gap-1">
+                        ${ytUrl
+                          ? `<a href="${escapeHtml(ytUrl)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-rose-500/15 text-rose-500 hover:bg-rose-500 hover:text-white transition-colors" title="Watch your YouTube link">
+                               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                             </a>
+                             <button type="button" data-action="edit-yt" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}" class="p-1 rounded text-slate-400 hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Change YouTube link">
+                               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                             </button>`
+                          : `<button type="button" data-action="edit-yt" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-dashed border-slate-300 dark:border-surface-700 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:border-rose-500/60 hover:text-rose-500 transition-colors" title="Add your YouTube link">
+                               <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+                               YT
+                             </button>`
+                        }
+                      </div>
+                    </td>
+
+                    <!-- Level -->
+                    <td class="px-3 py-3.5 text-center">${levelBadgeHtml(task.level)}</td>
+
+                    <!-- Practice / Notes -->
+                    <td class="px-3 py-3.5 text-center">
+                      <div class="inline-flex items-center gap-1.5">
+                        ${pracUrl
+                          ? `<a href="${escapeHtml(pracUrl)}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg bg-slate-100 dark:bg-surface-800 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors" title="Open Practice / Resource Link">
+                               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                             </a>`
+                          : `<span class="text-xs text-slate-400">—</span>`
+                        }
+                        <button type="button" data-action="notes" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                          class="p-1.5 rounded-lg transition-colors ${task.notes ? 'bg-amber-500/15 text-amber-500' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-800'}" title="View / Edit Notes">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </button>
+                      </div>
+                    </td>
+
+                    <!-- Timer -->
+                    <td class="px-3 py-3.5 text-center">
+                      <div class="inline-flex flex-col items-center gap-1">
+                        <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">${task.minutes || 30}Min</span>
+                        <div class="inline-flex items-center gap-1">
+                          <button type="button" data-action="start-timer" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                            class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-colors" title="Start Timer">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                          </button>
+                          <button type="button" data-action="reset-timer" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                            class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors" title="Reset Timer">
+                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Tags / Company -->
+                    <td class="px-3 py-3.5">
+                      <div class="flex flex-wrap items-center gap-1">${tagsHtml}${extraTags}</div>
+                    </td>
+
+                    <!-- Save & Actions -->
+                    <td class="pl-2 pr-4 py-3.5 text-right">
+                      <div class="inline-flex items-center gap-1">
+                        <button type="button" data-action="toggle-save" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                          class="p-1.5 rounded-lg transition-colors ${task.saved ? 'text-blue-500 bg-blue-500/10' : 'text-slate-400 hover:text-slate-200'}" title="Save / Bookmark">
+                          <svg class="w-4 h-4" fill="${task.saved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                        </button>
+                        <button type="button" data-action="edit-task" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                          class="p-1.5 rounded-lg text-slate-400 hover:text-blue-400 transition-colors" title="Edit Task">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button type="button" data-action="delete-task" data-topic-id="${escapeHtml(topic.id)}" data-task-id="${escapeHtml(task.id)}"
+                          class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 transition-colors" title="Delete Task">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join('');
+
+          return `
+            <div class="rounded-2xl border border-slate-200 dark:border-surface-700/80 bg-white dark:bg-surface-900 overflow-hidden">
+              <!-- Topic Header -->
+              <div class="px-5 py-4 flex items-center justify-between gap-3 bg-slate-50/70 dark:bg-surface-850/70">
+                <button type="button" data-action="toggle-topic" data-topic-id="${escapeHtml(topic.id)}" class="flex-1 flex items-center gap-3 text-left min-w-0">
+                  <span class="font-bold text-sm sm:text-base truncate">${escapeHtml(topic.name)}</span>
+                </button>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button type="button" data-action="add-task-to-topic" data-topic-id="${escapeHtml(topic.id)}" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors">
+                    + Task
+                  </button>
+                  <button type="button" data-action="edit-topic" data-topic-id="${escapeHtml(topic.id)}" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-400" title="Rename Topic">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                  </button>
+                  <button type="button" data-action="delete-topic" data-topic-id="${escapeHtml(topic.id)}" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500" title="Delete Topic">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-mono font-semibold border border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-800 tabular-nums">${doneCount}/${totalCount}</span>
+                  <button type="button" data-action="toggle-topic" data-topic-id="${escapeHtml(topic.id)}" class="w-7 h-7 rounded-full bg-blue-500/15 text-blue-500 flex items-center justify-center transition-transform ${isExpanded ? 'rotate-180' : ''}" aria-label="Expand topic">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Topic Table -->
+              ${isExpanded ? `
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="border-t border-slate-200 dark:border-surface-700/80 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/40 dark:bg-surface-900">
+                        <th class="pl-4 pr-2 py-2.5 w-10"></th>
+                        <th class="px-3 py-2.5">Task / Problem</th>
+                        <th class="px-3 py-2.5 text-center">YouTube</th>
+                        <th class="px-3 py-2.5 text-center">Level</th>
+                        <th class="px-3 py-2.5 text-center">Practice / Notes</th>
+                        <th class="px-3 py-2.5 text-center">Timer</th>
+                        <th class="px-3 py-2.5">Tags</th>
+                        <th class="pl-2 pr-4 py-2.5 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                  </table>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).filter(Boolean).join('');
+
+        container.innerHTML = renderedTopics || `
+          <div class="rounded-2xl border border-slate-200 dark:border-surface-700 bg-white dark:bg-surface-900 p-8 text-center">
+            <p class="text-sm font-semibold">No matching tasks found</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Try clearing your search or switching the filter.</p>
+          </div>
+        `;
+      }
+
+      // Event Delegation for Topics Container
+      document.getElementById('topics-container').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const topicId = btn.dataset.topicId;
+        const taskId = btn.dataset.taskId;
+        const prog = getActiveProgram();
+        const topic = prog.topics.find(t => t.id === topicId);
+        if (!topic) return;
+
+        if (action === 'toggle-topic') {
+          topic.expanded = !topic.expanded;
+          saveState();
+          renderTopics();
+          return;
+        }
+        if (action === 'add-task-to-topic') {
+          openTaskModal({ topicId });
+          return;
+        }
+        if (action === 'edit-topic') {
+          openTopicModal(topic);
+          return;
+        }
+        if (action === 'delete-topic') {
+          openConfirmModal(`Delete topic "${topic.name}" and all its tasks?`, () => {
+            prog.topics = prog.topics.filter(t => t.id !== topicId);
+            saveState();
+            renderAll();
+            showToast('Topic deleted');
+          });
+          return;
+        }
+
+        const task = topic.tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        if (action === 'toggle-done') {
+          task.done = !task.done;
+          if (task.done) recordTodayActive();
+          saveState();
+          renderAll();
+        } else if (action === 'toggle-save') {
+          task.saved = !task.saved;
+          saveState();
+          renderAll();
+        } else if (action === 'edit-yt') {
+          openQuickYoutubeModal(topic, task);
+        } else if (action === 'notes') {
+          openNotesModal(topic, task);
+        } else if (action === 'edit-task') {
+          openTaskModal({ topicId, task });
+        } else if (action === 'delete-task') {
+          openConfirmModal(`Delete task "${task.title}"?`, () => {
+            topic.tasks = topic.tasks.filter(t => t.id !== taskId);
+            saveState();
+            renderAll();
+            showToast('Task deleted');
+          });
+        } else if (action === 'start-timer') {
+          loadTaskIntoTimer(topic, task, true);
+        } else if (action === 'reset-timer') {
+          loadTaskIntoTimer(topic, task, false);
+        }
+      });
+
+      // Timer Functions
+      function formatMMSS(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      function renderTimerUI() {
+        const formatted = formatMMSS(timer.remainingSeconds);
+        const pct = timer.totalSeconds > 0 ? Math.round((timer.remainingSeconds / timer.totalSeconds) * 100) : 0;
+        document.getElementById('timer-display').textContent = formatted;
+        document.getElementById('timer-topic').textContent = timer.topicName;
+        document.getElementById('timer-task-name').textContent = timer.taskName;
+        document.getElementById('timer-limit-label').textContent = `${Math.round(timer.totalSeconds / 60)} min`;
+        const lvlEl = document.getElementById('timer-level-label');
+        lvlEl.textContent = timer.level;
+        lvlEl.className = 'font-semibold ' + (timer.level === 'Easy' ? 'text-emerald-500' : timer.level === 'Medium' ? 'text-amber-500' : 'text-rose-500');
+        document.getElementById('timer-remaining-pct').textContent = `${pct}% (${formatted})`;
+        document.getElementById('timer-progress-bar').style.width = `${pct}%`;
+        document.getElementById('timer-start-label').textContent = timer.running ? 'Pause' : 'Start';
+      }
+
+      function stopTimerInterval() {
+        if (timer.intervalId) {
+          clearInterval(timer.intervalId);
+          timer.intervalId = null;
+        }
+        timer.running = false;
+      }
+
+      function startTimerInterval() {
+        stopTimerInterval();
+        timer.running = true;
+        timer.intervalId = setInterval(() => {
+          if (timer.remainingSeconds > 0) {
+            timer.remainingSeconds--;
+            renderTimerUI();
+          } else {
+            stopTimerInterval();
+            renderTimerUI();
+            showToast(`Time's up for "${timer.taskName}"!`);
+          }
+        }, 1000);
+        renderTimerUI();
+      }
+
+      function loadTaskIntoTimer(topic, task, autoStart) {
+        stopTimerInterval();
+        const mins = Math.max(1, Number(task.minutes) || 30);
+        timer.taskId = task.id;
+        timer.topicName = topic.name;
+        timer.taskName = task.title;
+        timer.level = task.level;
+        timer.totalSeconds = mins * 60;
+        timer.remainingSeconds = mins * 60;
+        document.getElementById('timer-widget').classList.remove('hidden');
+        if (autoStart) startTimerInterval();
+        else renderTimerUI();
+      }
+
+      document.getElementById('timer-start-btn').addEventListener('click', () => {
+        if (timer.running) {
+          stopTimerInterval();
+          renderTimerUI();
+        } else {
+          if (timer.remainingSeconds <= 0) timer.remainingSeconds = timer.totalSeconds;
+          startTimerInterval();
+        }
+      });
+
+      document.getElementById('timer-reset-btn').addEventListener('click', () => {
+        stopTimerInterval();
+        timer.remainingSeconds = timer.totalSeconds;
+        renderTimerUI();
+      });
+
+      document.getElementById('timer-close-btn').addEventListener('click', () => {
+        stopTimerInterval();
+        document.getElementById('timer-widget').classList.add('hidden');
+      });
+
+      document.getElementById('open-timer-btn').addEventListener('click', () => {
+        document.getElementById('timer-widget').classList.remove('hidden');
+        renderTimerUI();
+        closeMobileSidebar();
+      });
+
+      // Modals
+      const modalOverlay = document.getElementById('modal-overlay');
+      const modalTitle = document.getElementById('modal-title');
+      const modalBody = document.getElementById('modal-body');
+
+      function openModal(title, html) {
+        modalTitle.textContent = title;
+        modalBody.innerHTML = html;
+        modalOverlay.classList.remove('hidden');
+        modalOverlay.classList.add('flex');
+      }
+
+      function closeModal() {
+        modalOverlay.classList.add('hidden');
+        modalOverlay.classList.remove('flex');
+      }
+
+      document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+
+      function openConfirmModal(message, onConfirm) {
+        openModal('Confirm Action', `
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-5">${escapeHtml(message)}</p>
+          <div class="flex justify-end gap-2">
+            <button type="button" id="confirm-cancel" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800 hover:bg-slate-200 dark:hover:bg-surface-700">Cancel</button>
+            <button type="button" id="confirm-ok" class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white">Delete</button>
+          </div>
+        `);
+        document.getElementById('confirm-cancel').addEventListener('click', closeModal);
+        document.getElementById('confirm-ok').addEventListener('click', () => {
+          closeModal();
+          onConfirm();
+        });
+      }
+
+      function openProgramModal(existingProg = null) {
+        const isEdit = Boolean(existingProg);
+        openModal(isEdit ? 'Edit Program' : 'Create New Program', `
+          <form id="program-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold mb-1.5">Program Name *</label>
+              <input id="prog-name" type="text" required value="${escapeHtml(existingProg ? existingProg.name : '')}" placeholder="e.g. System Design, GATE 2027, Web Dev" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1.5">Blue Highlight Prefix</label>
+                <input id="prog-highlight" type="text" value="${escapeHtml(existingProg ? existingProg.highlight : '')}" placeholder="e.g. GATE 2027 -" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1.5">Hero Title</label>
+                <input id="prog-title" type="text" value="${escapeHtml(existingProg ? existingProg.title : '')}" placeholder="e.g. Complete Prep" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1.5">Description</label>
+              <textarea id="prog-subtitle" rows="2" placeholder="Short goal or description for this program..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${escapeHtml(existingProg ? existingProg.subtitle : '')}</textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" id="prog-cancel" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800">Cancel</button>
+              <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">${isEdit ? 'Save Changes' : 'Create Program'}</button>
+            </div>
+          </form>
+        `);
+        document.getElementById('prog-cancel').addEventListener('click', closeModal);
+        document.getElementById('program-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('prog-name').value.trim();
+          if (!name) return;
+          const highlight = document.getElementById('prog-highlight').value.trim() || `${name} -`;
+          const title = document.getElementById('prog-title').value.trim() || 'Study Sheet';
+          const subtitle = document.getElementById('prog-subtitle').value.trim() || `Custom tasks, topics, and YouTube links for ${name}.`;
+          if (isEdit) {
+            existingProg.name = name;
+            existingProg.highlight = highlight;
+            existingProg.title = title;
+            existingProg.subtitle = subtitle;
+          } else {
+            const newProg = {
+              id: uid('prog'),
+              name,
+              highlight,
+              title,
+              subtitle,
+              color: 'blue',
+              topics: [{ id: uid('top'), name: 'Module 1: Getting Started', expanded: true, tasks: [] }]
+            };
+            state.programs.push(newProg);
+            state.activeProgramId = newProg.id;
+          }
+          saveState();
+          closeModal();
+          renderAll();
+          showToast(isEdit ? 'Program updated' : `Program "${name}" created`);
+        });
+      }
+
+      function openTopicModal(existingTopic = null) {
+        const isEdit = Boolean(existingTopic);
+        openModal(isEdit ? 'Rename Topic' : 'Add New Topic', `
+          <form id="topic-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold mb-1.5">Topic / Module Name *</label>
+              <input id="topic-name-input" type="text" required value="${escapeHtml(existingTopic ? existingTopic.name : '')}" placeholder="e.g. Trees & Graphs, Computer Networks" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="topic-cancel" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800">Cancel</button>
+              <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">${isEdit ? 'Save' : 'Add Topic'}</button>
+            </div>
+          </form>
+        `);
+        document.getElementById('topic-cancel').addEventListener('click', closeModal);
+        document.getElementById('topic-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('topic-name-input').value.trim();
+          if (!name) return;
+          if (isEdit) {
+            existingTopic.name = name;
+          } else {
+            getActiveProgram().topics.push({ id: uid('top'), name, expanded: true, tasks: [] });
+          }
+          saveState();
+          closeModal();
+          renderAll();
+          showToast(isEdit ? 'Topic renamed' : 'Topic added');
+        });
+      }
+
+      function openTaskModal({ topicId = null, task = null } = {}) {
+        const prog = getActiveProgram();
+        if (prog.topics.length === 0) {
+          prog.topics.push({ id: uid('top'), name: 'General Tasks', expanded: true, tasks: [] });
+        }
+        const selectedTopicId = topicId || prog.topics[0].id;
+        const isEdit = Boolean(task);
+        const topicOptions = prog.topics.map(t =>
+          `<option value="${escapeHtml(t.id)}" ${t.id === selectedTopicId ? 'selected' : ''}>${escapeHtml(t.name)}</option>`
+        ).join('');
+
+        openModal(isEdit ? 'Edit Task' : 'Add New Task', `
+          <form id="task-form" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-semibold mb-1">Task / Problem Title *</label>
+              <input id="task-title" type="text" required value="${escapeHtml(task ? task.title : '')}" placeholder="e.g. Longest Increasing Subsequence" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-1">
+                <label class="block text-xs font-semibold mb-1">Topic</label>
+                <select id="task-topic" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  ${topicOptions}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Level</label>
+                <select id="task-level" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="Easy" ${task && task.level === 'Easy' ? 'selected' : ''}>Easy</option>
+                  <option value="Medium" ${!task || task.level === 'Medium' ? 'selected' : ''}>Medium</option>
+                  <option value="Hard" ${task && task.level === 'Hard' ? 'selected' : ''}>Hard</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Timer (min)</label>
+                <input id="task-minutes" type="number" min="1" max="240" value="${task ? (task.minutes || 30) : 30}" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold mb-1 text-rose-500">Your YouTube Link (Optional)</label>
+              <input id="task-yt" type="url" value="${escapeHtml(task ? task.youtubeUrl : '')}" placeholder="https://www.youtube.com/watch?v=..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold mb-1">Practice / Resource URL (Optional)</label>
+              <input id="task-practice" type="url" value="${escapeHtml(task ? task.practiceUrl : '')}" placeholder="https://leetcode.com/... or GATE PYQ link" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold mb-1">Tags / Companies (comma-separated)</label>
+              <input id="task-tags" type="text" value="${escapeHtml(task ? (task.tags || []).join(', ') : '')}" placeholder="e.g. Google, Amazon, GATE PYQ" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold mb-1">Notes</label>
+              <textarea id="task-notes" rows="2" placeholder="Key formulas, approach, or reminders..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${escapeHtml(task ? task.notes : '')}</textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" id="task-cancel" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800">Cancel</button>
+              <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">${isEdit ? 'Save Task' : 'Add Task'}</button>
+            </div>
+          </form>
+        `);
+
+        document.getElementById('task-cancel').addEventListener('click', closeModal);
+        document.getElementById('task-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const title = document.getElementById('task-title').value.trim();
+          if (!title) return;
+          const targetTopicId = document.getElementById('task-topic').value;
+          const level = document.getElementById('task-level').value;
+          const minutes = Math.max(1, parseInt(document.getElementById('task-minutes').value, 10) || 30);
+          const youtubeUrl = document.getElementById('task-yt').value.trim();
+          const practiceUrl = document.getElementById('task-practice').value.trim();
+          const tags = document.getElementById('task-tags').value.split(',').map(s => s.trim()).filter(Boolean);
+          const notes = document.getElementById('task-notes').value.trim();
+
+          if (isEdit) {
+            // Move topic if changed
+            if (targetTopicId !== selectedTopicId) {
+              const oldTopic = prog.topics.find(t => t.id === selectedTopicId);
+              const newTopic = prog.topics.find(t => t.id === targetTopicId);
+              if (oldTopic && newTopic) {
+                oldTopic.tasks = oldTopic.tasks.filter(t => t.id !== task.id);
+                newTopic.tasks.push(task);
+                newTopic.expanded = true;
+              }
+            }
+            task.title = title;
+            task.level = level;
+            task.minutes = minutes;
+            task.youtubeUrl = youtubeUrl;
+            task.practiceUrl = practiceUrl;
+            task.tags = tags;
+            task.notes = notes;
+          } else {
+            const targetTopic = prog.topics.find(t => t.id === targetTopicId);
+            if (targetTopic) {
+              targetTopic.expanded = true;
+              targetTopic.tasks.push({
+                id: uid('tsk'),
+                title,
+                youtubeUrl,
+                practiceUrl,
+                level,
+                minutes,
+                tags,
+                notes,
+                done: false,
+                saved: false
+              });
+            }
+          }
+          saveState();
+          closeModal();
+          renderAll();
+          showToast(isEdit ? 'Task updated' : 'Task added');
+        });
+      }
+
+      function openQuickYoutubeModal(topic, task) {
+        openModal('Add / Edit Your YouTube Link', `
+          <form id="yt-form" class="space-y-4">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Attach your own YouTube lecture or playlist link for <strong>${escapeHtml(task.title)}</strong>.</p>
+            <div>
+              <label class="block text-xs font-semibold mb-1.5">YouTube URL</label>
+              <input id="quick-yt-url" type="url" value="${escapeHtml(task.youtubeUrl || '')}" placeholder="https://www.youtube.com/watch?v=..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500" />
+            </div>
+            <div class="flex justify-between items-center gap-2 pt-1">
+              ${task.youtubeUrl ? `<button type="button" id="yt-remove" class="px-3 py-2 rounded-xl text-xs font-semibold text-rose-500 hover:bg-rose-500/10">Remove Link</button>` : '<span></span>'}
+              <div class="flex gap-2">
+                <button type="button" id="yt-cancel" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800">Cancel</button>
+                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white">Save YouTube Link</button>
+              </div>
+            </div>
+          </form>
+        `);
+        document.getElementById('yt-cancel').addEventListener('click', closeModal);
+        const remBtn = document.getElementById('yt-remove');
+        if (remBtn) {
+          remBtn.addEventListener('click', () => {
+            task.youtubeUrl = '';
+            saveState();
+            closeModal();
+            renderTopics();
+            showToast('YouTube link removed');
+          });
+        }
+        document.getElementById('yt-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          task.youtubeUrl = document.getElementById('quick-yt-url').value.trim();
+          saveState();
+          closeModal();
+          renderTopics();
+          showToast('YouTube link saved');
+        });
+      }
+
+      function openNotesModal(topic, task) {
+        openModal(`Notes — ${task.title}`, `
+          <form id="notes-form" class="space-y-4">
+            <textarea id="notes-textarea" rows="6" placeholder="Write your key takeaways, time complexity, or formulas here..." class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${escapeHtml(task.notes || '')}</textarea>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="notes-cancel" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800">Cancel</button>
+              <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">Save Notes</button>
+            </div>
+          </form>
+        `);
+        document.getElementById('notes-cancel').addEventListener('click', closeModal);
+        document.getElementById('notes-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          task.notes = document.getElementById('notes-textarea').value.trim();
+          saveState();
+          closeModal();
+          renderTopics();
+          showToast('Notes saved');
+        });
+      }
+
+      // Sidebar mobile toggle
+      function closeMobileSidebar() {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+        document.getElementById('sidebar-backdrop').classList.add('hidden');
+      }
+      document.getElementById('open-sidebar-btn').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('-translate-x-full');
+        document.getElementById('sidebar-backdrop').classList.remove('hidden');
+      });
+      document.getElementById('close-sidebar-btn').addEventListener('click', closeMobileSidebar);
+      document.getElementById('sidebar-backdrop').addEventListener('click', closeMobileSidebar);
+
+      // Top & Hero Buttons
+      document.getElementById('add-program-btn').addEventListener('click', () => openProgramModal());
+      document.getElementById('edit-program-btn').addEventListener('click', () => openProgramModal(getActiveProgram()));
+      function handleDeleteActiveProgram() {
+        if (state.programs.length <= 1) {
+          showToast('Keep at least one program in your workspace.');
+          return;
+        }
+        const prog = getActiveProgram();
+        openConfirmModal(`Delete program "${prog.name}" and all its topics/tasks?`, () => {
+          state.programs = state.programs.filter(p => p.id !== prog.id);
+          state.activeProgramId = state.programs[0].id;
+          saveState();
+          renderAll();
+          showToast('Program removed');
+        });
+      }
+      document.getElementById('sidebar-remove-program-btn').addEventListener('click', handleDeleteActiveProgram);
+      document.getElementById('delete-program-btn').addEventListener('click', handleDeleteActiveProgram);
+
+      document.getElementById('add-topic-btn').addEventListener('click', () => openTopicModal());
+      document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
+      document.getElementById('roadmap-quick-add-btn').addEventListener('click', () => openTaskModal());
+
+      // Search & Filters
+      const searchInput = document.getElementById('search-input');
+      const clearSearchBtn = document.getElementById('clear-search-btn');
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value;
+        clearSearchBtn.classList.toggle('hidden', !searchQuery);
+        renderTopics();
+      });
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchBtn.classList.add('hidden');
+        renderTopics();
+      });
+
+      document.getElementById('filter-pills').addEventListener('click', (e) => {
+        const pill = e.target.closest('.filter-pill');
+        if (!pill) return;
+        currentFilter = pill.dataset.filter;
+        renderHero();
+        renderTopics();
+      });
+
+      // Theme toggle
+      document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        applyTheme();
+        saveState();
+      });
+
+      // Calendar navigation & Log Today
+      document.getElementById('cal-prev-btn').addEventListener('click', () => {
+        calDate.setMonth(calDate.getMonth() - 1);
+        renderCalendar();
+      });
+      document.getElementById('cal-next-btn').addEventListener('click', () => {
+        calDate.setMonth(calDate.getMonth() + 1);
+        renderCalendar();
+      });
+      document.getElementById('mark-today-active-btn').addEventListener('click', () => {
+        recordTodayActive();
+        saveState();
+        renderStats();
+        renderCalendar();
+        showToast('Logged today as an active study day!');
+      });
+
+      // Export & Import JSON
+      document.getElementById('export-data-btn').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `studyforge-backup-${todayISO()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Backup exported');
+      });
+
+      document.getElementById('import-data-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            if (parsed && Array.isArray(parsed.programs) && parsed.programs.length > 0) {
+              state = parsed;
+              saveState();
+              applyTheme();
+              renderAll();
+              showToast('Backup imported successfully');
+            } else {
+              showToast('Invalid backup file');
+            }
+          } catch (err) {
+            showToast('Could not parse JSON file');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      function renderAll() {
+        renderSidebar();
+        renderHero();
+        renderStats();
+        renderCalendar();
+        renderTopics();
+      }
+
+      function openDatabaseModal() {
+        const allTopics = state.programs.flatMap(p => p.topics || []);
+        const allTasks = allTopics.flatMap(t => t.tasks || []);
+        const ytCount = allTasks.filter(t => (t.youtubeUrl || '').trim().length > 0).length;
+        const doneCount = allTasks.filter(t => t.done).length;
+        const savedText = lastSavedAt ? new Date(lastSavedAt).toLocaleString() : 'Just now';
+
+        openModal('Database Storage (Sahith Sai Pasupula)', `
+          <div class="space-y-4">
+            <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <div>
+                  <p class="text-xs font-bold text-emerald-500">${escapeHtml(dbEngine)} Connected</p>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400">Stores: programs, topics, tasks, meta • Last synced: ${escapeHtml(savedText)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-center">
+              <div class="p-3 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700">
+                <p class="text-lg font-extrabold tabular-nums">${state.programs.length}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Programs</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700">
+                <p class="text-lg font-extrabold tabular-nums">${allTopics.length}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Topics</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700">
+                <p class="text-lg font-extrabold tabular-nums">${allTasks.length}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Total Tasks</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700">
+                <p class="text-lg font-extrabold tabular-nums text-rose-500">${ytCount}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">YouTube Links</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700">
+                <p class="text-lg font-extrabold tabular-nums text-emerald-500">${doneCount}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Completed</p>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 dark:bg-surface-800 border border-slate-200 dark:border-surface-700">
+                <p class="text-lg font-extrabold tabular-nums text-amber-500">${(state.activeDays || []).length}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Active Days</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-surface-700/80">
+              <button type="button" id="db-reset-btn" class="px-3 py-2 rounded-xl text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors">Reset Database</button>
+              <div class="flex gap-2">
+                <button type="button" id="db-export-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">Export JSON</button>
+                <button type="button" id="db-close-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-surface-800">Close</button>
+              </div>
+            </div>
+          </div>
+        `);
+
+        document.getElementById('db-close-btn').addEventListener('click', closeModal);
+        document.getElementById('db-export-btn').addEventListener('click', () => {
+          document.getElementById('export-data-btn').click();
+        });
+        document.getElementById('db-reset-btn').addEventListener('click', () => {
+          openConfirmModal('Reset the database back to default DSA & GATE 2027 starter data?', () => {
+            state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            saveState();
+            applyTheme();
+            renderAll();
+            showToast('Database reset to defaults');
+          });
+        });
+      }
+
+      document.getElementById('db-status-btn').addEventListener('click', () => {
+        openDatabaseModal();
+        closeMobileSidebar();
+      });
+
+      const portfolioDrawer = document.getElementById('portfolio-drawer');
+      const portfolioBackdrop = document.getElementById('portfolio-drawer-backdrop');
+      const portfolioIframe = document.getElementById('portfolio-iframe');
+
+      function openPortfolioDrawer() {
+        if (!portfolioIframe.src) {
+          portfolioIframe.src = 'https://sahith8639.github.io/Portfolio/';
+        }
+        portfolioBackdrop.classList.remove('hidden');
+        portfolioDrawer.classList.remove('translate-x-full');
+        closeMobileSidebar();
+      }
+
+      function closePortfolioDrawer() {
+        portfolioDrawer.classList.add('translate-x-full');
+        portfolioBackdrop.classList.add('hidden');
+      }
+
+      document.getElementById('open-portfolio-drawer-btn').addEventListener('click', openPortfolioDrawer);
+      document.getElementById('close-portfolio-drawer-btn').addEventListener('click', closePortfolioDrawer);
+      portfolioBackdrop.addEventListener('click', closePortfolioDrawer);
+
+      // Initialize
+      applyTheme();
+      renderAll();
+      loadStateFromDB().then((dbState) => {
+        state = dbState;
+        const badge = document.getElementById('db-badge-label');
+        if (badge) badge.textContent = dbEngine === 'IndexedDB' ? 'IDB' : 'LS';
+        applyTheme();
+        renderAll();
+      });
+    })();
+  </script>
+</body>
+</html>
